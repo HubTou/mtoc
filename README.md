@@ -94,5 +94,5 @@ The order of names in a man page is sorted alphabetically, which sometimes diffe
 I couldn't find the logic behind whatis behaviour...
 
 It isn't currently possible to process:
-* architecture-dependent man pages (for example, in /usr/share/man/man[48]/{aarch64, amd64, arm, i386, powerpc}
-* already uncompressed man pages (for example, in /usr/share/man/cat[1-9]
+* architecture-dependent man pages (for example, in /usr/share/man/man[48]/{aarch64, amd64, arm, i386, powerpc})
+* already uncompressed man pages (for example, in /usr/share/man/cat[1-9])
