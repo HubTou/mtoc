@@ -60,7 +60,7 @@ It provides default values both for Unix-like and Windows operating systems.
 
 Locale man pages can be processed if the path where they are stored is added to **MANPATH**.
 
-Under Windows, the command can use the **APPDATA**, **HOMEPATH** and **USERPROFILE** environement variables to find man pages.
+Under Windows, the command can use the **APPDATA**, **HOMEPATH** and **USERPROFILE** environment variables to find man pages.
 
 ## EXIT STATUS
 The **mtoc** utility exits 0 on success, and >0 if an error occurs.
