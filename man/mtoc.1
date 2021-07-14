@@ -1,0 +1,148 @@
+.Dd JULY 14, 2021
+.Dt MTOC 1
+.Os
+.Sh NAME
+.Nm mtoc
+.Nd show Manual table of contents
+.Sh SYNOPSIS
+.Nm
+.Op Fl f|--file|--whatis Ar FILE
+.Op Fl n|--no Ar MACROS
+.Op Fl -Dq
+.Op Fl -Pa|--PaSq
+.Op Fl -PaDq
+.Op Fl -Xr
+.Op Fl -debug
+.Op Fl -help|-?
+.Op Fl -version
+.Op Fl -
+.Op Ar SECTION ...
+.Sh DESCRIPTION
+The
+.Nm
+utility shows the Manual table of contents.
+.Pp
+Without arguments, it will list the Manual sections listed in "man man".
+.Pp
+With arguments, it will list the contents of the requested Manual sections in whatis(1) format.
+.Pp
+The display can be a little bit improved over standard whatis format by using the
+.Fl -Dq ,
+.Fl -Pa ,
+.Fl -PaSq ,
+.Fl -PaDq
+and
+.Fl -Xr
+options, in order to interpret the corresponding mdoc(7) macros.
+.Pp
+It can also be used as a database-less substitute of whatis, by using the
+.Fl f ,
+.Fl -file
+or
+.Fl -whatis
+options on a Manual page's pathname.
+.Pp
+It is possible to discard man(7) or mdoc(7) pages by using the
+.Fl n
+or
+.Fl -no
+options with a
+.Ar man
+or
+.Ar mdoc
+parameter.
+.Pp
+The
+.Fl f
+and
+.Fl n
+options can be used multiple times.
+.Ss OPTIONS
+.Op Fl f|--file|--whatis Ar FILE
+Process a specific file, like whatis(1)
+.Pp
+.Op Fl n|--no Ar MACROS
+Discard man or mdoc macros
+.Pp
+.Op Fl -Dq
+Interpret .Dq (double quotes) macros
+.Pp
+.Op Fl -Pa|--PaSq
+Interpret .Pa (path) macros as single quoted strings
+.Pp
+.Op Fl -PaDq
+Interpret .Pa (path) macros as double quoted strings
+.Pp
+.Op Fl -Xr
+Interpret .Xr (cross reference) macros
+.Pp
+.Op Fl -debug
+Enable debug mode
+.Pp
+.Op Fl -help|-?
+Print usage and this help message and exit
+.Pp
+.Op Fl -version
+Print version and exit
+.Pp
+.Op Fl -
+Options processing terminator
+.Sh ENVIRONMENT
+The
+.Ev MTOC_DEBUG
+environment variable can also be set to any value to enable debug mode.
+.Pp
+The
+.Nm
+utility uses the
+.Ev MANPATH
+environment variable to find man pages.
+It provides default values both for Unix-like and Windows operating systems.
+.Pp
+Locale man pages can be processed if the path where they are stored is added to
+.Ev MANPATH .
+.Pp
+Under Windows, the command can use the
+.Ev APPDATA ,
+.Ev HOMEPATH
+and
+.Ev USERPROFILE
+environment variables to find man pages.
+.Sh EXIT STATUS
+.Ex -std mtoc
+.Sh SEE ALSO
+.Xr man 1 ,
+.Xr whatis 1 ,
+.Xr apropos 1 ,
+.Xr man 7 ,
+.Xr mandoc_char 7 ,
+.Xr mdoc 7 ,
+.Xr roff 7
+.Sh STANDARDS
+The
+.Nm
+utility is not a standard UNIX/POSIX command.
+.Pp
+It tries to follow the PEP 8 style guide for Python code.
+.Sh HISTORY
+This utility was made for the
+.Lk https://github.com/HubTou/PNU [PNU project]
+in order to explore providing a Manual under non-Unix operating systems.
+This turned out to be way more complex than anticipated,
+forcing me to delve much more deeply in roff(7) macros than originally intended!
+.Sh LICENSE
+This utility is available under the 3-clause BSD license.
+.Sh AUTHORS
+.An "Hubert Tournier"
+.Sh CAVEATS
+The order of names in a man page is sorted alphabetically, which sometimes differ from whatis(1) output.
+I couldn't find the logic behind whatis behaviour...
+.Pp
+It isn't currently possible to process:
+.Bl -bullet
+.It
+architecture-dependent man pages (for example, in /usr/share/man/man[48]/{aarch64, amd64, arm, i386, powerpc})
+.It
+already uncompressed man pages (for example, in /usr/share/man/cat[1-9])
+.El
+
