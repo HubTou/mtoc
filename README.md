@@ -80,7 +80,7 @@ The **mtoc** utility is not a standard UNIX/POSIX command.
 It tries to follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide for [Python](https://www.python.org/) code.
 
 ## HISTORY
-This utility was made for [The PNU project](https://github.com/HubTou/PNU) in order to explore providing a manual under non-Unix operating systems.
+This utility was made for [The PNU project](https://github.com/HubTou/PNU) in order to explore providing a Manual under non-Unix operating systems.
 This turned out to be way more complex than anticipated, forcing me to delve much more deeply in [roff(7)](https://www.freebsd.org/cgi/man.cgi?query=roff&sektion=7) macros than originally intended!
 
 ## LICENSE
@@ -96,4 +96,3 @@ I couldn't find the logic behind whatis behaviour...
 It isn't currently possible to process:
 * architecture-dependent man pages (for example, in /usr/share/man/man[48]/{aarch64, amd64, arm, i386, powerpc}
 * already uncompressed man pages (for example, in /usr/share/man/cat[1-9]
-
