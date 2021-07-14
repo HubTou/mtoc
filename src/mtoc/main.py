@@ -33,12 +33,24 @@ def display_help():
     print("       [-f|--file|--whatis FILE] [-n|--no MACROS]", file=sys.stderr)
     print("       [--Dq] [--Pa|--PaSq] [--PaDq] [--Xr]", file=sys.stderr)
     print("       [--] [SECTION ...]", file=sys.stderr)
-    print("  -----------------------  ----------------------------------------------------", file=sys.stderr)
-    print("  -f|--file|--whatis FILE  Process a specific file, like whatis(1) [*]", file=sys.stderr)
+    print(
+        "  -----------------------  ----------------------------------------------------",
+        file=sys.stderr
+    )
+    print(
+        "  -f|--file|--whatis FILE  Process a specific file, like whatis(1) [*]",
+        file=sys.stderr
+    )
     print("  -n|--no MACROS           Discard man or mdoc macros [*]", file=sys.stderr)
     print("  --Dq                     Interpret .Dq (double quotes) macros", file=sys.stderr)
-    print("  --Pa|--PaSq              Interpret .Pa (path) macros as single quoted strings", file=sys.stderr)
-    print("  --PaDq                   Interpret .Pa (path) macros as double quoted strings", file=sys.stderr)
+    print(
+        "  --Pa|--PaSq              Interpret .Pa (path) macros as single quoted strings",
+        file=sys.stderr
+    )
+    print(
+        "  --PaDq                   Interpret .Pa (path) macros as double quoted strings",
+        file=sys.stderr
+    )
     print("  --Xr                     Interpret .Xr (cross reference) macros", file=sys.stderr)
     print("  --debug                  Enable debug mode", file=sys.stderr)
     print("  --help|-?                Print usage and this help message and exit", file=sys.stderr)
@@ -220,63 +232,63 @@ def replace_roff_user_defined_strings(text, user_defined_strings):
 
     if "\\*" not in text:
         return text
-    else:
-        new_text = ""
-        slash = False
-        star = False
-        in_short_key = False
-        in_long_key = False
-        key = ""
 
-        for character in text:
-            if character == "\\":
-                slash = True
-            elif slash:
-                slash = False
-                if character == "*":
-                    star = True
-                else:
-                    new_text += character
-            elif star:
-                star = False
-                if character == "(":
-                    in_short_key = True
-                elif character == "[":
-                    in_long_key = True
-                else:
-                    if character in user_defined_strings.keys():
-                        new_text += user_defined_strings[character]
-                    elif character == "R":
-                        new_text += "(Reg.)"
-                    elif character == "S":
-                        pass
-                    else:
-                        logging.debug("UNDEFINED user defined string: %s", character)
-            elif in_short_key:
-                key += character
-                if len(key) == 2:
-                    in_short_key = False
-                    if key in user_defined_strings.keys():
-                        new_text += user_defined_strings[key]
-                    elif key == "lq" or key == "rq":
-                        new_text += '"'
-                    elif key == "Tm":
-                        new_text += "(TM)"
-                    else:
-                        logging.debug("UNDEFINED user defined string: %s", key)
-            elif in_long_key:
-                if character == "]":
-                    in_long_key = False
-                    if key in user_defined_strings.keys():
-                        new_text += user_defined_strings[key]
-                    else:
-                        logging.debug("UNDEFINED user defined string: %s", key)
-                else:
-                    key += character
+    new_text = ""
+    slash = False
+    star = False
+    in_short_key = False
+    in_long_key = False
+    key = ""
+
+    for character in text:
+        if character == "\\":
+            slash = True
+        elif slash:
+            slash = False
+            if character == "*":
+                star = True
             else:
                 new_text += character
+        elif star:
+            star = False
+            if character == "(":
+                in_short_key = True
+            elif character == "[":
+                in_long_key = True
+            else:
+                if character in user_defined_strings.keys():
+                    new_text += user_defined_strings[character]
+                elif character == "R":
+                    new_text += "(Reg.)"
+                elif character == "S":
+                    pass
+                else:
+                    logging.debug("UNDEFINED user defined string: %s", character)
+        elif in_short_key:
+            key += character
+            if len(key) == 2:
+                in_short_key = False
+                if key in user_defined_strings.keys():
+                    new_text += user_defined_strings[key]
+                elif key in ("lq", "rq"):
+                    new_text += '"'
+                elif key == "Tm":
+                    new_text += "(TM)"
+                else:
+                    logging.debug("UNDEFINED user defined string: %s", key)
+        elif in_long_key:
+            if character == "]":
+                in_long_key = False
+                if key in user_defined_strings.keys():
+                    new_text += user_defined_strings[key]
+                else:
+                    logging.debug("UNDEFINED user defined string: %s", key)
+            else:
+                key += character
+        else:
+            new_text += character
 
-        return new_text
+    return new_text
 
 
 ################################################################################
@@ -326,7 +338,7 @@ def whatis(filename, section, basename):
                     if whatis_text.startswith("("):
                         whatis_text = ", ".join(items) + whatis_text
                     else:
-                        # Print the section number if no one line description is provided (see ipfilter(5)):
+                        # Print the section number if no one line description is provided:
                         whatis_text = ", ".join(items) + "(" + section + ") - " + whatis_text
                     break
 
