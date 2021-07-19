@@ -1,4 +1,4 @@
-.Dd JULY 14, 2021
+.Dd JULY 20, 2021
 .Dt MTOC 1
 .Os
 .Sh NAME
@@ -10,6 +10,7 @@
 .Op Fl n|--no Ar MACROS
 .Op Fl -Dq
 .Op Fl -Pa|--PaSq
+.Op Fl t|--type
 .Op Fl -PaDq
 .Op Fl -Xr
 .Op Fl -debug
@@ -53,6 +54,13 @@ or
 parameter.
 .Pp
 The
+.Fl t
+or 
+.Fl -type
+options will add the type of man page after a pipe character: man, mdoc, other, so(X):{man, mdoc, other},
+with X indicating the number of redirections (more than 3 will cause an error in order to prevent loops).
+.Pp
+The
 .Fl f
 and
 .Fl n
@@ -63,6 +71,9 @@ Process a specific file, like whatis(1)
 .Pp
 .Op Fl n|--no Ar MACROS
 Discard man or mdoc macros
+.Pp
+.Op Fl t|--type
+Print type of man page (ie. man, mdoc, other, so)
 .Pp
 .Op Fl -Dq
 Interpret .Dq (double quotes) macros
@@ -130,6 +141,9 @@ This utility was made for the
 in order to explore providing a Manual under non-Unix operating systems.
 This turned out to be way more complex than anticipated,
 forcing me to delve much more deeply in roff(7) macros than originally intended!
+.Pp
+Check this excellent
+.Lk http://manpages.bsd.lv/history.html [History of UNIX Manpages]
 .Sh LICENSE
 This utility is available under the 3-clause BSD license.
 .Sh AUTHORS
@@ -145,4 +159,3 @@ architecture-dependent man pages (for example, in /usr/share/man/man[48]/{aarch6
 .It
 already uncompressed man pages (for example, in /usr/share/man/cat[1-9])
 .El
-

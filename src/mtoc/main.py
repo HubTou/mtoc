@@ -13,7 +13,7 @@ import shlex
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: mtoc - show Manual table of contents v1.0.0 (July 14, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.0 (July 20, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -23,6 +23,7 @@ parameters = {
     "Interpret Pa": "",
     "Interpret Xr": False,
     "Files" : [],
+    "Print type" : False,
 }
 
 
@@ -30,7 +31,7 @@ parameters = {
 def display_help():
     """Displays usage and help"""
     print("usage: mtoc [--debug] [--help|-?] [--version]", file=sys.stderr)
-    print("       [-f|--file|--whatis FILE] [-n|--no MACROS]", file=sys.stderr)
+    print("       [-f|--file|--whatis FILE] [-n|--no MACROS] [-t|--type]", file=sys.stderr)
     print("       [--Dq] [--Pa|--PaSq] [--PaDq] [--Xr]", file=sys.stderr)
     print("       [--] [SECTION ...]", file=sys.stderr)
     print(
@@ -42,6 +43,7 @@ def display_help():
         file=sys.stderr
     )
     print("  -n|--no MACROS           Discard man or mdoc macros [*]", file=sys.stderr)
+    print("  -t|--type                Print type of man page (ie. man, mdoc, other, so)", file=sys.stderr)
     print("  --Dq                     Interpret .Dq (double quotes) macros", file=sys.stderr)
     print(
         "  --Pa|--PaSq              Interpret .Pa (path) macros as single quoted strings",
@@ -79,12 +81,13 @@ def process_command_line():
 
     # option letters followed by : expect an argument
     # same for option strings followed by =
-    character_options = "f:n:?"
+    character_options = "f:n:t?"
     string_options = [
         "debug",
         "file=",
         "help",
         "no=",
+        "type",
         "version",
         "Dq",
         "Pa",
@@ -132,6 +135,9 @@ def process_command_line():
             else:
                 logging.critical('The "%s" file does not exist!', parameter)
                 sys.exit(1)
+
+        elif option in ("-t", "--type"):
+            parameters["Print type"] = True
 
         elif option == "--debug":
             logging.disable(logging.NOTSET)
@@ -292,7 +298,7 @@ def replace_roff_user_defined_strings(text, user_defined_strings):
 
 
 ################################################################################
-def whatis(filename, section, basename):
+def whatis(filename, section, basename, nb_of_so_redirections):
     """Show the entry name and its one line description, whatis(1) like"""
     logging.debug("mtoc.whatis(%s):", filename)
 
@@ -481,24 +487,27 @@ def whatis(filename, section, basename):
 
                 # .Dq TEXT macro line handling:
                 # - the TEXT is sometimes already double quoted (ie. big(5))
-                elif text_line.startswith(".Dq") and parameters["Interpret Dq"]:
-                    text_line = re.sub(r"^\.Dq ", '"', text_line)
-                    text_line = re.sub(r" *$", '"', text_line)
-                    text_line = re.sub(r'""', '"', text_line)
+                elif text_line.startswith(".Dq"):
+                    if parameters["Interpret Dq"]:
+                        text_line = re.sub(r"^\.Dq ", '"', text_line)
+                        text_line = re.sub(r" *$", '"', text_line)
+                        text_line = re.sub(r'""', '"', text_line)
+                    else:
+                        text_line = re.sub(r"^\.Dq ", "", text_line)
                     whatis_text += " " + text_line
 
                 # .Pa PATH macro line handling:
-                elif text_line.startswith(".Pa") \
-                and parameters["Interpret Pa"]:
+                elif text_line.startswith(".Pa"):
                     text_line = re.sub(r"^\.Pa ", parameters["Interpret Pa"], text_line)
                     text_line = re.sub(r" *$", parameters["Interpret Pa"], text_line)
                     whatis_text += " " + text_line
 
                 # .Xr MAN_ITEM MAN_SECTION macro line handling:
-                elif text_line.startswith(".Xr") and parameters["Interpret Xr"]:
+                elif text_line.startswith(".Xr"):
                     text_line = re.sub(r"^\.Xr ", "", text_line)
-                    text_line = re.sub(r" ", "(", text_line, count=1)
-                    text_line = re.sub(r" *$", ")", text_line)
+                    if parameters["Interpret Xr"]:
+                        text_line = re.sub(r" ", "(", text_line, count=1)
+                        text_line = re.sub(r" *$", ")", text_line)
                     whatis_text += " " + text_line
 
                 # Skip other macros
@@ -553,7 +562,11 @@ def whatis(filename, section, basename):
                 if not new_filename.endswith(".gz"):
                     new_filename += ".gz"
                 if os.path.isfile(new_filename):
-                    whatis(new_filename, new_section, basename)
+                    if nb_of_so_redirections == 3:
+                        logging.critical("Too many .so source file redirections")
+                        sys.exit(1)
+
+                    whatis(new_filename, new_section, basename, nb_of_so_redirections + 1)
                     break
             return
 
@@ -565,7 +578,20 @@ def whatis(filename, section, basename):
             defined_strings[parts[1]] = parts[2]
 
     if in_mandoc_section_name or in_mdoc_section_name:
-        print(whatis_text)
+        if parameters["Print type"]:
+            if in_mandoc_section_name:
+                if nb_of_so_redirections:
+                    print(whatis_text + "|" + "so(" + str(nb_of_so_redirections) + "):man")
+                else:
+                    print(whatis_text + "|" + "man")
+            elif nb_of_so_redirections:
+                print(whatis_text + "|" + "so(" + str(nb_of_so_redirections) + "):mdoc")
+            else:
+                print(whatis_text + "|" + "mdoc")
+        else:
+            print(whatis_text)
+    elif parameters["Print type"]:
+        print(basename + " - " + "|" + "other")
 
 
 ################################################################################
@@ -609,7 +635,7 @@ def show_section_contents(section):
             for name in files:
                 if os.path.isfile(manual_section + os.sep + name):
                     basename = re.sub(r"\." + section + r"\.[A-Za-z0-9]*$", "", name)
-                    whatis(manual_section + os.sep + name, section, basename)
+                    whatis(manual_section + os.sep + name, section, basename, 0)
 
 
 ################################################################################
@@ -632,7 +658,7 @@ def main():
                 section = re.sub(r"\.[A-Za-z0-9]*$", "", basename)
                 basename = re.sub(r"\.[A-Za-z0-9]+$", "", section)
                 section = re.sub(r"^.*\.", "", section)
-                whatis(page, section, basename)
+                whatis(page, section, basename, 0)
         if arguments:
             for argument in arguments:
                 show_section_contents(argument)

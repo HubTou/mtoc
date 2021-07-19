@@ -10,6 +10,7 @@ mtoc - show Manual table of contents
 **mtoc**
 \[-f|--file|--whatis FILE\]
 \[-n|--no MACROS\]
+\[-t|--type\]
 \[--Dq\]
 \[--Pa|--PaSq\]
 \[--PaDq\]
@@ -36,6 +37,9 @@ It is possible to discard [man(7)](https://www.freebsd.org/cgi/man.cgi?query=man
 or [mdoc(7)](https://www.freebsd.org/cgi/man.cgi?query=mdoc&sektion=7) pages
 by using the *-n* or *--no* options with a *man* or *mdoc* parameter.
 
+The *-t* or *--type* options will add the type of man page after a pipe character: man, mdoc, other, so(X):{man, mdoc, other},
+with X indicating the number of redirections (more than 3 will cause an error in order to prevent loops).
+
 The *-f* and *-n* options can be used multiple times.
 
 ### OPTIONS
@@ -43,6 +47,7 @@ Options | Use
 ------- | ---
 -f\|--file\|--whatis FILE|Process a specific file, like whatis(1)
 -n\|--no MACROS|Discard man or mdoc macros
+-t\|--type|Print type of man page (ie. man, mdoc, other, so)
 --Dq|Interpret .Dq (double quotes) macros
 --Pa\|--PaSq|Interpret .Pa (path) macros as single quoted strings
 --PaDq|Interpret .Pa (path) macros as double quoted strings
@@ -82,6 +87,8 @@ It tries to follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style 
 ## HISTORY
 This utility was made for [The PNU project](https://github.com/HubTou/PNU) in order to explore providing a Manual under non-Unix operating systems.
 This turned out to be way more complex than anticipated, forcing me to delve much more deeply in [roff(7)](https://www.freebsd.org/cgi/man.cgi?query=roff&sektion=7) macros than originally intended!
+
+Check this excellent [History of UNIX Manpages](http://manpages.bsd.lv/history.html).
 
 ## LICENSE
 This utility is available under the [3-clause BSD license](https://opensource.org/licenses/BSD-3-Clause).
