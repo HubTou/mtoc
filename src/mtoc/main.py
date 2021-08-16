@@ -13,7 +13,7 @@ import shlex
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.0 (July 20, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.1 (August 16, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -182,7 +182,7 @@ def strip_roff_comments(text):
 
     # Request lines with only a control character and optional trailing
     # whitespace are stripped from input:
-    text = re.sub(r"^\.[ 	]*$", "", text)
+    text = re.sub(r"^\.[        ]*$", "", text)
 
     # A request line beginning with a control character and comment escape '.\"'
     # is also ignored:
@@ -335,7 +335,7 @@ def whatis(filename, section, basename, nb_of_so_redirections):
 
                 text_line = text_line.replace("\\\\", "\\")
                 text_line = re.sub(r"\\ ", " ", text_line)
-                text_line = re.sub(r"[ 	]+", " ", text_line)
+                text_line = re.sub(r"[  ]+", " ", text_line)
                 text_line = re.sub(r"-+", "-", text_line)
 
                 # .SH NAME section end macro line:
@@ -395,7 +395,7 @@ def whatis(filename, section, basename, nb_of_so_redirections):
                 text_line = replace_roff_user_defined_strings(text_line, defined_strings)
                 text_line = text_line.replace("\\\\", "\\")
                 text_line = re.sub(r"\\ ", " ", text_line)
-                text_line = re.sub(r"[ 	]+", " ", text_line)
+                text_line = re.sub(r"[  ]+", " ", text_line)
                 text_line = re.sub(r"-+", "-", text_line)
 
                 # .Nm (manual name) macro line handling:
@@ -608,6 +608,7 @@ def get_manpath_directories():
                 manual_directories.append("/usr/local/man")
             if os.path.isdir("/usr/local/share/man"):
                 manual_directories.append("/usr/local/share/man")
+
         elif os.name == "nt":
             pnu_manpath = os.sep + "python" + os.sep + "man"
             appdata_path = os.sep + "appdata" + os.sep + "roaming"
@@ -617,9 +618,12 @@ def get_manpath_directories():
                 pnu_manpath = os.environ["HOMEPATH"] + appdata_path + pnu_manpath
             elif os.environ["USERPROFILE"]:
                 pnu_manpath = os.environ["USERPROFILE"] + appdata_path + pnu_manpath
-
             if os.path.isdir(pnu_manpath):
                 manual_directories.append(pnu_manpath)
+
+            pnu_manpath2 = sys.executable.replace("python.exe", "man")
+            if os.path.isdir(pnu_manpath2):
+                manual_directories.append(pnu_manpath2)
 
     return manual_directories
 
