@@ -13,7 +13,7 @@ import shlex
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.1 (August 16, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.2 (August 16, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -598,7 +598,7 @@ def whatis(filename, section, basename, nb_of_so_redirections):
 def get_manpath_directories():
     """Return the list of directories in MANPATH"""
     manual_directories = []
-    if os.environ["MANPATH"]:
+    if "MANPATH" in os.environ.keys():
         manual_directories = os.environ["MANPATH"].split(os.pathsep)
     else:
         if os.name == "posix":
