@@ -80,7 +80,7 @@ The **mtoc** utility exits 0 on success, and >0 if an error occurs.
 [roff(7)](https://www.freebsd.org/cgi/man.cgi?query=roff&sektion=7)
 
 ## STANDARDS
-The **mtoc** utility is not a standard UNIX/POSIX command.
+The **mtoc** utility is not a standard UNIX command.
 
 It tries to follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide for [Python](https://www.python.org/) code.
 
