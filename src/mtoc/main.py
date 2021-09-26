@@ -13,7 +13,7 @@ import shlex
 import sys
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.2 (August 16, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: mtoc - show Manual table of contents v1.1.3 (September 26, 2021) by Hubert Tournier $"
 
 # Default parameters. Can be overcome by environment variables, then command line options
 parameters = {
@@ -25,6 +25,14 @@ parameters = {
     "Files" : [],
     "Print type" : False,
 }
+
+
+################################################################################
+def initialize_debugging(program_name):
+    """Debugging set up"""
+    console_log_format = program_name + ": %(levelname)s: %(message)s"
+    logging.basicConfig(format=console_log_format, level=logging.DEBUG)
+    logging.disable(logging.INFO)
 
 
 ################################################################################
@@ -182,7 +190,7 @@ def strip_roff_comments(text):
 
     # Request lines with only a control character and optional trailing
     # whitespace are stripped from input:
-    text = re.sub(r"^\.[        ]*$", "", text)
+    text = re.sub(r"^\.[ 	]*$", "", text)
 
     # A request line beginning with a control character and comment escape '.\"'
     # is also ignored:
@@ -335,7 +343,7 @@ def whatis(filename, section, basename, nb_of_so_redirections):
 
                 text_line = text_line.replace("\\\\", "\\")
                 text_line = re.sub(r"\\ ", " ", text_line)
-                text_line = re.sub(r"[  ]+", " ", text_line)
+                text_line = re.sub(r"[ 	]+", " ", text_line)
                 text_line = re.sub(r"-+", "-", text_line)
 
                 # .SH NAME section end macro line:
@@ -395,7 +403,7 @@ def whatis(filename, section, basename, nb_of_so_redirections):
                 text_line = replace_roff_user_defined_strings(text_line, defined_strings)
                 text_line = text_line.replace("\\\\", "\\")
                 text_line = re.sub(r"\\ ", " ", text_line)
-                text_line = re.sub(r"[  ]+", " ", text_line)
+                text_line = re.sub(r"[ 	]+", " ", text_line)
                 text_line = re.sub(r"-+", "-", text_line)
 
                 # .Nm (manual name) macro line handling:
@@ -621,7 +629,7 @@ def get_manpath_directories():
             if os.path.isdir(pnu_manpath):
                 manual_directories.append(pnu_manpath)
 
-            pnu_manpath2 = sys.executable.replace("python.exe", "man")
+            pnu_manpath2 = sys.base_prefix + os.sep + "man"
             if os.path.isdir(pnu_manpath2):
                 manual_directories.append(pnu_manpath2)
 
@@ -646,10 +654,8 @@ def show_section_contents(section):
 def main():
     """The program's main entry point"""
     program_name = os.path.basename(sys.argv[0])
-    console_log_format = program_name + ": %(levelname)s: %(message)s"
-    logging.basicConfig(format=console_log_format, level=logging.DEBUG)
-    logging.disable(logging.INFO)
 
+    initialize_debugging(program_name)
     process_environment_variables()
     arguments = process_command_line()
 
